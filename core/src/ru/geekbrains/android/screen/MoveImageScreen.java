@@ -15,8 +15,9 @@ public class MoveImageScreen extends Base2DScreen {
 
     private Vector2 currPos;
     private Vector2 newPos;
-    private Vector2 d;
-    private Vector2 v;
+    private Vector2 distance;
+    private Vector2 step;
+    private float speed;
 
     private Vector2 touch;
 
@@ -27,6 +28,8 @@ public class MoveImageScreen extends Base2DScreen {
         imgHalfOfWidtht = img.getWidth() / 2;
         imgHalfOfHeight = img.getHeight() / 2;
         currPos = new Vector2(0, 0);
+        newPos = new Vector2(0, 0);
+        speed = 3.1f;
         touch = new Vector2();
 
     }
@@ -37,6 +40,17 @@ public class MoveImageScreen extends Base2DScreen {
         Gdx.gl.glClearColor(1, 0.3f, 0.6f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
+        if(!currPos.equals(newPos)){
+            distance = newPos.cpy().sub(currPos);
+             step = distance.cpy().nor();
+            step.scl(speed);
+            if(step.len() > distance.len()){
+                currPos.x = newPos.x;
+                currPos.y = newPos.y;
+            }else {
+                currPos.add(step);
+            }
+        }
         batch.draw(img, currPos.x, currPos.y);
         batch.end();
     }
@@ -51,8 +65,8 @@ public class MoveImageScreen extends Base2DScreen {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         super.touchDown(screenX, screenY, pointer, button);
         touch.set(screenX, Gdx.graphics.getHeight() - screenY);
-        currPos.x = touch.x - imgHalfOfWidtht;
-        currPos.y = touch.y - imgHalfOfHeight;
+        newPos.x = touch.x - imgHalfOfWidtht;
+        newPos.y = touch.y - imgHalfOfHeight;
         System.out.println("touch X = " + touch.x + " touch Y = " + touch.y);
         return false;
     }
