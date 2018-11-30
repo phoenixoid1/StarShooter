@@ -10,8 +10,6 @@ import ru.geekbrains.android.base.Base2DScreen;
 
 public class MoveImageScreen extends Base2DScreen {
     private Texture img;
-    private int imgHalfOfWidtht;
-    private int imgHalfOfHeight;
 
     private Vector2 currPos;
     private Vector2 newPos;
@@ -21,18 +19,20 @@ public class MoveImageScreen extends Base2DScreen {
 
     private Vector2 touch;
 
+    private float imageSizeInPercentOfScreen = 30;
+    private float imageSize;
+
     @Override
     public void show() {
         super.show();
         img = new Texture("badlogic.jpg");
-        imgHalfOfWidtht = img.getWidth() / 2;
-        imgHalfOfHeight = img.getHeight() / 2;
         currPos = new Vector2(0, 0);
         newPos = new Vector2(0, 0);
-        speed = 3.1f;
+        speed = 0.1f;
         touch = new Vector2();
         distance = new Vector2();
         step = new Vector2();
+        imageSize = super.getMyHeight() * imageSizeInPercentOfScreen / 100;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class MoveImageScreen extends Base2DScreen {
                 currPos.add(step);
             }
         }
-        batch.draw(img, 0f, 0f, 0.5f, 0.5f);
+        batch.draw(img, currPos.x, currPos.y, imageSize, imageSize);
         batch.end();
     }
 
@@ -62,31 +62,33 @@ public class MoveImageScreen extends Base2DScreen {
     }
 
     @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        super.touchDown(screenX, screenY, pointer, button);
-        touch.set(screenX, Gdx.graphics.getHeight() - screenY);
-        newPos.x = touch.x - imgHalfOfWidtht;
-        newPos.y = touch.y - imgHalfOfHeight;
-        System.out.println("touch X = " + touch.x + " touch Y = " + touch.y);
+    public boolean touchDown(Vector2 touch, int pointer) {
+        System.out.println(" Override touchDown touch.x = " + touch.x + " touch.y = " + touch.y);
+        newPos.x = touch.x - imageSize /2;
+        newPos.y = touch.y - imageSize /2;
         return false;
     }
 
     @Override
     public boolean keyDown(int keycode) {
         System.out.println("keyDown keycode = " + keycode);
-        int step = 10;
+        float step = 0.1f;
         switch (keycode) {
             case 19:
                 currPos.y += step;
+                newPos.y += step;
                 break;
             case 20:
                 currPos.y -= step;
+                newPos.y -= step;
                 break;
             case 21:
                 currPos.x -= step;
+                newPos.x -= step;
                 break;
             case 22:
                 currPos.x += step;
+                newPos.x += step;
                 break;
             default:
                 break;
@@ -94,7 +96,4 @@ public class MoveImageScreen extends Base2DScreen {
         return false;
     }
 
-    public void doSomething(String s){
-        System.out.println(s);
-    }
 }

@@ -13,7 +13,6 @@ import ru.geekbrains.android.math.Rect;
 
 public class Base2DScreen implements Screen, InputProcessor {
 
-
     protected SpriteBatch batch;
 
     private Rect screenBounds; // границы области рисования в пикселях
@@ -25,6 +24,7 @@ public class Base2DScreen implements Screen, InputProcessor {
 
     private Vector2 touch = new Vector2();
 
+    private float myHeight = 17;
 
     public Base2DScreen() {
         this.screenBounds = new Rect();
@@ -34,6 +34,9 @@ public class Base2DScreen implements Screen, InputProcessor {
         this.screenToWorld = new Matrix3();
     }
 
+    public float getMyHeight() {
+        return myHeight;
+    }
 
     @Override
     public void show() {
@@ -56,8 +59,8 @@ public class Base2DScreen implements Screen, InputProcessor {
         screenBounds.setBottom(0);
 
         float aspect = width / (float) height;
-        worldBounds.setHeight(1f);
-        worldBounds.setWidth(1f*aspect);
+        worldBounds.setHeight(myHeight);
+        worldBounds.setWidth(myHeight*aspect);
         MatrixUtils.calcTransitionMatrix(worldToGl, worldBounds, glBounds);
         batch.setProjectionMatrix(worldToGl);
         MatrixUtils.calcTransitionMatrix(screenToWorld, screenBounds, worldBounds);
