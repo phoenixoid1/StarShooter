@@ -31,7 +31,8 @@ public class MoveImageScreen extends Base2DScreen {
         newPos = new Vector2(0, 0);
         speed = 3.1f;
         touch = new Vector2();
-
+        distance = new Vector2();
+        step = new Vector2();
     }
 
     @Override
@@ -41,9 +42,8 @@ public class MoveImageScreen extends Base2DScreen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         if(!currPos.equals(newPos)){
-            distance = newPos.cpy().sub(currPos);
-             step = distance.cpy().nor();
-            step.scl(speed);
+            distance.set(newPos).sub(currPos);
+            step.set(distance).nor().scl(speed);
             if(step.len() > distance.len()){
                 currPos.x = newPos.x;
                 currPos.y = newPos.y;
