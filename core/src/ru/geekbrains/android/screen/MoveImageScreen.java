@@ -51,7 +51,7 @@ public class MoveImageScreen extends Base2DScreen {
                 currPos.add(step);
             }
         }
-        batch.draw(img, currPos.x, currPos.y);
+        batch.draw(img, 0f, 0f, 0.5f, 0.5f);
         batch.end();
     }
 
