@@ -2,12 +2,12 @@ package ru.geekbrains.android;
 
 import com.badlogic.gdx.Game;
 
-import ru.geekbrains.android.screen.MenuScreen;
+import ru.geekbrains.android.screen.MoveImageScreen;
 
 
 public class Star2DShooter extends Game {
     @Override
     public void create() {
-        setScreen(new MenuScreen());
+        setScreen(new MoveImageScreen());
     }
 }
