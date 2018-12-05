@@ -24,7 +24,6 @@ public class Base2DScreen implements Screen, InputProcessor {
 
     private Vector2 touch = new Vector2();
 
-    private float myHeight = 17;
 
     public Base2DScreen() {
         this.screenBounds = new Rect();
@@ -32,10 +31,6 @@ public class Base2DScreen implements Screen, InputProcessor {
         this.glBounds = new Rect(0,0,1f, 1f);
         this.worldToGl = new Matrix4();
         this.screenToWorld = new Matrix3();
-    }
-
-    public float getMyHeight() {
-        return myHeight;
     }
 
     @Override
@@ -59,8 +54,8 @@ public class Base2DScreen implements Screen, InputProcessor {
         screenBounds.setBottom(0);
 
         float aspect = width / (float) height;
-        worldBounds.setHeight(myHeight);
-        worldBounds.setWidth(myHeight*aspect);
+        worldBounds.setHeight(1f);
+        worldBounds.setWidth(1f*aspect);
         MatrixUtils.calcTransitionMatrix(worldToGl, worldBounds, glBounds);
         batch.setProjectionMatrix(worldToGl);
         MatrixUtils.calcTransitionMatrix(screenToWorld, screenBounds, worldBounds);
@@ -160,4 +155,3 @@ public class Base2DScreen implements Screen, InputProcessor {
         return false;
     }
 }
-
