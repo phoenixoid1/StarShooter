@@ -1,4 +1,4 @@
-package ru.geekbrains.android.screen;
+package ru.geekbrains.android.sprite;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
