@@ -1,43 +1,60 @@
 package ru.geekbrains.android.sprite;
 
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 
-import ru.geekbrains.android.base.Sprite;
+import ru.geekbrains.android.base.Ship;
 import ru.geekbrains.android.math.Rect;
 import ru.geekbrains.android.pool.BulletPool;
 
-public class MainShip extends Sprite {
+public class MainShip extends Ship {
+
+    private static final int INVALID_POINTER = -1;
 
     private Vector2 v0 = new Vector2(0.5f, 0);
-    private Vector2 v = new Vector2();
 
     private boolean pressedLeft;
     private boolean pressedRight;
 
-    private BulletPool bulletPool;
+    private int leftPointer = INVALID_POINTER;
+    private int rightPointer = INVALID_POINTER;
 
-    private TextureAtlas atlas;
-
-    private Rect worldBounds;
-
-    public MainShip(TextureAtlas atlas, BulletPool bulletPool) {
-        super(atlas.findRegion("main_ship"), 1, 2, 2);
+    public MainShip(TextureAtlas atlas, BulletPool bulletPool, Sound sound) {
+        super(atlas.findRegion("main_ship"), 1, 2, 2, sound);
         setHeightProportion(0.15f);
         this.bulletPool = bulletPool;
-        this.atlas = atlas;
+        this.reloadInterval = 0.2f;
+        this.bulletRegion = atlas.findRegion("bulletMainShip");
+        this.bulletHeight = 0.01f;
+        this.bulletV.set(0, 0.5f);
+        this.bulletDamage = 1;
+        this.hp = 100;
     }
 
     @Override
     public void update(float delta) {
         super.update(delta);
         pos.mulAdd(v, delta);
+        reloadTimer += delta;
+        if (reloadTimer >= reloadInterval) {
+            reloadTimer = 0f;
+            shoot();
+        }
+        if (getRight() > worldBounds.getRight()) {
+            setRight(worldBounds.getRight());
+            stop();
+        }
+        if (getLeft() < worldBounds.getLeft()) {
+            setLeft(worldBounds.getLeft());
+            stop();
+        }
     }
 
     @Override
     public void resize(Rect worldBounds) {
-        this.worldBounds = worldBounds;
+        super.resize(worldBounds);
         setBottom(worldBounds.getBottom() + 0.05f);
     }
 
@@ -52,9 +69,6 @@ public class MainShip extends Sprite {
             case Input.Keys.RIGHT:
                 pressedRight = true;
                 moveRight();
-                break;
-            case Input.Keys.UP:
-                shoot();
                 break;
         }
         return false;
@@ -86,12 +100,36 @@ public class MainShip extends Sprite {
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer) {
-        return super.touchDown(touch, pointer);
+        if (touch.x < worldBounds.pos.x) {
+            if (leftPointer != INVALID_POINTER) return false;
+            leftPointer = pointer;
+            moveLeft();
+        } else {
+            if (rightPointer != INVALID_POINTER) return false;
+            rightPointer = pointer;
+            moveRight();
+        }
+        return false;
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer) {
-        return super.touchUp(touch, pointer);
+        if (pointer == leftPointer) {
+            leftPointer = INVALID_POINTER;
+            if (rightPointer != INVALID_POINTER) {
+                moveRight();
+            } else {
+                stop();
+            }
+        } else if (pointer == rightPointer) {
+            rightPointer = INVALID_POINTER;
+            if (leftPointer != INVALID_POINTER) {
+                moveLeft();
+            } else {
+                stop();
+            }
+        }
+        return false;
     }
 
     private void moveRight() {
@@ -107,9 +145,4 @@ public class MainShip extends Sprite {
         v.setZero();
     }
 
-    public void shoot() {
-        Bullet bullet = bulletPool.obtain();
-        bullet.set(this, atlas.findRegion("bulletMainShip"),pos, new Vector2(0, 0.5f), 0.01f, worldBounds, 1);
-    }
 }
-
