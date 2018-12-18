@@ -20,7 +20,10 @@ import ru.geekbrains.android.pool.ExplosionPool;
 import ru.geekbrains.android.sprite.Background;
 import ru.geekbrains.android.sprite.Bullet;
 import ru.geekbrains.android.sprite.Enemy;
+import ru.geekbrains.android.sprite.GameOver;
 import ru.geekbrains.android.sprite.MainShip;
+import ru.geekbrains.android.sprite.PlayAgainButton;
+import ru.geekbrains.android.sprite.PlayButton;
 import ru.geekbrains.android.sprite.Star;
 import ru.geekbrains.android.utils.EnemiesEmitter;
 
@@ -49,6 +52,9 @@ public class GameScreen extends Base2DScreen {
     private Sound enemyShipShootSound;
     private Sound explosionSound;
 
+    private PlayAgainButton playAgainButton;
+    private GameOver gameOver;
+
     public GameScreen(Game game) {
         super(game);
     }
@@ -62,6 +68,7 @@ public class GameScreen extends Base2DScreen {
         textureAtlas = new TextureAtlas("textures/mainAtlas.tpack");
         bg = new Texture("textures/bg.png");
         background = new Background(new TextureRegion(bg));
+
         star = new Star[STAR_COUNT];
         for (int i = 0; i < star.length; i++) {
             star[i] = new Star(textureAtlas);
@@ -74,6 +81,8 @@ public class GameScreen extends Base2DScreen {
         enemyShipShootSound = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet.wav"));
         enemyPool = new EnemyPool(bulletPool, explosionPool, mainShip, worldBounds, enemyShipShootSound);
         enemiesEmitter = new EnemiesEmitter(worldBounds, enemyPool, textureAtlas);
+        gameOver = new GameOver(textureAtlas);
+        playAgainButton = new PlayAgainButton(textureAtlas, game);
     }
 
     @Override
@@ -90,11 +99,12 @@ public class GameScreen extends Base2DScreen {
         }
         if (!mainShip.isDestroyed()) {
             mainShip.update(delta);
+            bulletPool.updateActiveSprites(delta);
+            enemyPool.updateActiveSprites(delta);
+            explosionPool.updateActiveSprites(delta);
+            enemiesEmitter.generate(delta);
         }
-        bulletPool.updateActiveSprites(delta);
-        enemyPool.updateActiveSprites(delta);
-        explosionPool.updateActiveSprites(delta);
-        enemiesEmitter.generate(delta);
+
     }
 
     public void checkCollisions() {
@@ -156,10 +166,14 @@ public class GameScreen extends Base2DScreen {
         }
         if (!mainShip.isDestroyed()) {
             mainShip.draw(batch);
+            bulletPool.drawActiveSprites(batch);
+            enemyPool.drawActiveSprites(batch);
+            explosionPool.drawActiveSprites(batch);
+
+        } else {
+            gameOver.draw(batch);
+            playAgainButton.draw(batch);
         }
-        bulletPool.drawActiveSprites(batch);
-        enemyPool.drawActiveSprites(batch);
-        explosionPool.drawActiveSprites(batch);
         batch.end();
     }
 
@@ -171,6 +185,8 @@ public class GameScreen extends Base2DScreen {
             star[i].resize(worldBounds);
         }
         mainShip.resize(worldBounds);
+        gameOver.resize(worldBounds);
+        playAgainButton.resize(worldBounds);
     }
 
     @Override
@@ -187,14 +203,24 @@ public class GameScreen extends Base2DScreen {
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer) {
-        mainShip.touchDown(touch, pointer);
-        return super.touchDown(touch, pointer);
+        if (!mainShip.isDestroyed()) {
+            mainShip.touchDown(touch, pointer);
+            return super.touchDown(touch, pointer);
+        }else{
+            playAgainButton.touchDown(touch, pointer);
+            return super.touchDown(touch, pointer);
+        }
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer) {
-        mainShip.touchUp(touch, pointer);
-        return super.touchUp(touch, pointer);
+        if (!mainShip.isDestroyed()) {
+            mainShip.touchUp(touch, pointer);
+            return super.touchUp(touch, pointer);
+        }else{
+            playAgainButton.touchUp(touch, pointer);
+            return super.touchUp(touch, pointer);
+        }
     }
 
     @Override
