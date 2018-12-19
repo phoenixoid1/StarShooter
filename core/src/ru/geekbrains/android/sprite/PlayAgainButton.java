@@ -11,21 +11,17 @@ import ru.geekbrains.android.screen.GameScreen;
 
 public class PlayAgainButton extends ScaledButton {
 
-    Game game;
-    public PlayAgainButton(TextureAtlas atlas, Game game) {
-        super(atlas.findRegion("button_new_game"));
-        setHeightProportion(0.05f);
-        this.game = game;
-    }
+    private GameScreen gameScreen;
 
-    @Override
-    public void resize(Rect worldBounds) {
-        super.resize(worldBounds);
-        setBottom(worldBounds.getBottom() + 0.05f);
+    public PlayAgainButton(TextureAtlas atlas, GameScreen gameScreen) {
+        super(atlas.findRegion("button_new_game"));
+        this.gameScreen = gameScreen;
+        setHeightProportion(0.05f);
+        setTop(-0.012f);
     }
 
     @Override
     public void actionPerformed() {
-        game.setScreen(new GameScreen(game));
+        gameScreen.startNewGame();
     }
 }

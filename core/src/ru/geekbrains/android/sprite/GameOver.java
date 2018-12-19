@@ -10,6 +10,4 @@ public class GameOver extends Sprite {
         super(atlas.findRegion("message_game_over"));
         setHeightProportion(0.1f);
     }
-
-
 }
